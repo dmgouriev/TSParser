@@ -78,7 +78,7 @@ public class StreamParser extends Parser {
             @Override
             public void run() {
                 if (buffer.length >= tsPacketSize) {
-                    for (int i = 0; i < buffer.length; i += tsPacketSize) {
+                     for (int i = 0; i < buffer.length; i += tsPacketSize) {
                         i = seek(buffer, i);
                         if ((i == nil) || ((i + tsPacketSize) > buffer.length)) {
                             stop();

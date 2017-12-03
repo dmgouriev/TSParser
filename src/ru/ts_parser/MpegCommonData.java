@@ -79,12 +79,12 @@ public class MpegCommonData {
 
     public final static int PCRLegth = 48;
     public final static int PCR_PIDlength = 13;
-    public final static int programInfoLengthLength = 12;
-    public final static int networkInfoLengthLength = 12;
+    public final static int twelveLengthLength = 12;
     public final static int streamTypeLength = 8;
     public final static int elementaryPIDlength = 13;
-    public final static int ESinfoLengthLength = 12;
 
+    
+    public final static int sixteenIDlength = 16;
     public final static int serviceIDlength = 16;
     public final static int eventIDlength = 16;
     public final static int networkIDlength = 16;

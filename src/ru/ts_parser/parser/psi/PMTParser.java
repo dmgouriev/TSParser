@@ -29,7 +29,7 @@ public class PMTParser extends PSIParserAbstract {
         */
         position += 40;
         
-        short programInfoLength = (short) binToInt(sectionBinary, position += (reserved*2), position += programInfoLengthLength);
+        short programInfoLength = (short) binToInt(sectionBinary, position += (reserved*2), position += twelveLengthLength);
 
         int nLoopDescriptorsLength = programInfoLength * byteBinaryLength;
         position += nLoopDescriptorsLength;
@@ -41,7 +41,7 @@ public class PMTParser extends PSIParserAbstract {
         for (; position < N;) {
             int streamType = (int) binToInt(sectionBinary, position, position += streamTypeLength);
             int elementaryPID = (int) binToInt(sectionBinary, position += 3, position += elementaryPIDlength);
-            int ESinfoLength = (int) binToInt(sectionBinary, position += 4, position += ESinfoLengthLength);
+            int ESinfoLength = (int) binToInt(sectionBinary, position += 4, position += twelveLengthLength);
             position += ESinfoLength * byteBinaryLength;
             ESmap.put(elementaryPID, streamType);
             tables.getPMTmap().put(elementaryPID, programNum);

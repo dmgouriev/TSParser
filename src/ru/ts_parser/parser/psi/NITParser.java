@@ -58,11 +58,24 @@ public class NITParser extends PSIParserAbstract {
         */
         position += 24;
 
-        short networkDescriptorsLength = (short) binToInt(sectionBinary, position += (reserved*2), position += networkInfoLengthLength);
+        short networkDescriptorsLength = (short) binToInt(sectionBinary, position += (reserved*2), position += twelveLengthLength);
         
-//        int N = sectionLength * byteBinaryLength - CRClength;
-//
-//        while (position < N) {
+        int N = sectionLength * byteBinaryLength - CRClength;
+
+        while (position < N) {
+            short transportStreamLoopLength = (short) binToInt(sectionBinary, position += (reserved*2), position += twelveLengthLength);
+            
+            int transportStreamID = (int) binToInt(sectionBinary, position, position += sixteenIDlength);
+            int originalNetworkID = (int) binToInt(sectionBinary, position, position += sixteenIDlength);
+            short descriptorsLoopLength = (short) binToInt(sectionBinary, position += (reserved*2), position += descriptorsLengthLength);
+
+            System.out.println("transportStreamID = " + transportStreamID + ", originalNetworkID = " + originalNetworkID);
+            
+//            for(j=0;j<N;j++){
+//                descriptor()
+//            }
+//        }
+            
 //            int serviceID = (int) binToInt(sectionBinary, position, position += networkIDlength);
 //            /*
 //            byte EITscheduleFlag = sectionBinary[position += 6];
@@ -82,7 +95,7 @@ public class NITParser extends PSIParserAbstract {
 //
 ////            descriptor.loadDescriptors(serviceID, sectionBinary, descriptorsLoopLength, position, tables);
 ////            position += descriptorsLoopLength;
-//        }
+        }
 
         newState.setNeedContinue(false);
         fullPackageBuffer = null;
