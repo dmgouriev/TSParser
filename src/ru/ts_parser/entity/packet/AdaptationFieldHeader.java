@@ -1,4 +1,4 @@
-package ru.ts_parser.model.packet;
+package ru.ts_parser.entity.packet;
 
 
 public class AdaptationFieldHeader {
@@ -12,10 +12,9 @@ public class AdaptationFieldHeader {
     private final byte splicingPointFlag;
     private final byte TPDflag;
     private final byte AFEflag;
-    private AdaptationFieldOptionalFields adaptationFieldOptionalFields;
 
 
-    public AdaptationFieldHeader(short adaptationFieldLength, byte DI, byte RAI, byte ESPI, byte OPCRflag, byte PCRflag, byte splicingPointFlag, byte TPDflag, byte AFEflag, AdaptationFieldOptionalFields adaptationFieldOptionalFields) {
+    public AdaptationFieldHeader(short adaptationFieldLength, byte DI, byte RAI, byte ESPI, byte OPCRflag, byte PCRflag, byte splicingPointFlag, byte TPDflag, byte AFEflag) {
         this.adaptationFieldLength = adaptationFieldLength;
         this.DI = DI;
         this.RAI = RAI;
@@ -25,7 +24,6 @@ public class AdaptationFieldHeader {
         this.splicingPointFlag = splicingPointFlag;
         this.TPDflag = TPDflag;
         this.AFEflag = AFEflag;
-        this.adaptationFieldOptionalFields = adaptationFieldOptionalFields;
     }
 
 
@@ -65,11 +63,4 @@ public class AdaptationFieldHeader {
         return AFEflag;
     }
 
-    public AdaptationFieldOptionalFields getOptionalFields() {
-        return adaptationFieldOptionalFields;
-    }
-
-    public void setAdaptationFieldOptionalFields(AdaptationFieldOptionalFields adaptationFieldOptionalFields){
-        this.adaptationFieldOptionalFields = adaptationFieldOptionalFields;
-    }
 }

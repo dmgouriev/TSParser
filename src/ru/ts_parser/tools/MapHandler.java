@@ -1,4 +1,4 @@
-package ru.ts_parser.model;
+package ru.ts_parser.tools;
 
 import java.math.BigInteger;
 import java.util.*;

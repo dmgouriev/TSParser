@@ -1,8 +1,8 @@
 package ru.ts_parser.parser.header;
 
-import static ru.ts_parser.Tools.binToInt;
-import static ru.ts_parser.MpegCommonData.*;
-import ru.ts_parser.model.packet.Packet;
+import static ru.ts_parser.tools.Tools.binToInt;
+import static ru.ts_parser.base.MpegCommonData.*;
+import ru.ts_parser.entity.packet.Packet;
 import ru.ts_parser.parser.Parser;
 
 

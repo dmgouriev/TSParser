@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.ts_parser.parser.psi.base;
+package ru.ts_parser.base;
 
 import java.util.Arrays;
-import static ru.ts_parser.MpegCommonData.*;
-import ru.ts_parser.Tools;
-import ru.ts_parser.model.Tables;
-import ru.ts_parser.model.packet.Packet;
-import ru.ts_parser.model.packet.psi.PSI;
+import static ru.ts_parser.base.MpegCommonData.*;
+import ru.ts_parser.tools.Tools;
+import ru.ts_parser.entity.Tables;
+import ru.ts_parser.entity.packet.Packet;
+import ru.ts_parser.entity.packet.PSI;
 import ru.ts_parser.parser.Parser;
 import ru.ts_parser.parser.ParserState;
 
@@ -27,9 +27,6 @@ public abstract class PSIParserAbstract extends Parser {
     protected boolean parserResult = false;
     
     public void parse(Packet packet, Tables tables) {
-        if (getParserPSITableType() == PSI_TABLE_TYPE.SDT) {
-                System.out.println(packet.getContinuityCounter() + "\n");
-        }
         if (fullPackageBuffer != null && packet.getPayloadStartIndicator() == 0) {
             fullPackageBuffer = merge(fullPackageBuffer, Arrays.copyOfRange(packet.getData(), tsHeaderSize, tsPacketSize));
             packet.updateData(fullPackageBuffer);

@@ -1,4 +1,4 @@
-package ru.ts_parser.model.descriptors;
+package ru.ts_parser.entity.descriptors;
 
 
 public abstract class Descriptor{

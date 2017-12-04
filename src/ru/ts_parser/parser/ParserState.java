@@ -5,7 +5,7 @@
  */
 package ru.ts_parser.parser;
 
-import ru.ts_parser.MpegCommonData;
+import ru.ts_parser.base.MpegCommonData;
 
 /**
  *

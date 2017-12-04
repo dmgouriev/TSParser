@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.ts_parser;
+package ru.ts_parser.tools;
 
 import java.util.Arrays;
-import static ru.ts_parser.MpegCommonData.*;
+import static ru.ts_parser.base.MpegCommonData.*;
 import java.util.Map;
 
 /**

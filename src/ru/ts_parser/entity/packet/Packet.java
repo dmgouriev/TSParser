@@ -1,6 +1,6 @@
-package ru.ts_parser.model.packet;
+package ru.ts_parser.entity.packet;
 
-import ru.ts_parser.model.packet.AdaptationFieldHeader;
+import ru.ts_parser.entity.packet.AdaptationFieldHeader;
 
 public class Packet {
 

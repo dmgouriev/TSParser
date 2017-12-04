@@ -1,13 +1,13 @@
 package ru.ts_parser.parser;
 
 import java.io.UnsupportedEncodingException;
-import ru.ts_parser.model.descriptors.Descriptor;
-import ru.ts_parser.model.descriptors.ServiceDescriptor;
+import ru.ts_parser.entity.descriptors.Descriptor;
+import ru.ts_parser.entity.descriptors.ServiceDescriptor;
 import java.util.ArrayList;
 import java.util.List;
-import static ru.ts_parser.Tools.binToInt;
-import static ru.ts_parser.MpegCommonData.*;
-import ru.ts_parser.model.Tables;
+import static ru.ts_parser.tools.Tools.binToInt;
+import static ru.ts_parser.base.MpegCommonData.*;
+import ru.ts_parser.entity.Tables;
 
 public class DescriptorParser extends Parser {
 
@@ -45,15 +45,14 @@ public class DescriptorParser extends Parser {
         try {
             serviceProviderName = new String(new String(parseNchars(binaryFields, position, serviceProviderNameLength * charSize), "ISO-8859-5").getBytes(), "UTF-8");
         } catch (Exception ex) {
-            ex.printStackTrace();
+            return null;
         }
         short serviceNameLength = (short) binToInt(binaryFields, position += serviceProviderNameLength * charSize, position += serviceNameLengthLength);
         String serviceName = "";
         try {
             serviceName = new String(new String(parseNchars(binaryFields, position, serviceNameLength * charSize), "ISO-8859-5").getBytes(), "UTF-8");
         } catch (Exception ex) {
-            System.out.println("\n" + serviceID + "\n");
-            ex.printStackTrace();
+            return null;
         }
         tables.updateProgramMap(serviceID, serviceName.trim());
         tables.updateProviderMap(serviceID, serviceProviderName.trim());

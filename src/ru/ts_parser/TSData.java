@@ -3,8 +3,8 @@ package ru.ts_parser;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import static ru.ts_parser.MpegCommonData.*;
-import ru.ts_parser.model.Tables;
+import static ru.ts_parser.base.MpegCommonData.*;
+import ru.ts_parser.entity.Tables;
 
 public class TSData {
 

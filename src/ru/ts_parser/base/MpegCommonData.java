@@ -1,4 +1,4 @@
-package ru.ts_parser;
+package ru.ts_parser.base;
 
 
 public class MpegCommonData {

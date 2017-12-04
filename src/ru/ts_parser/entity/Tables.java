@@ -1,4 +1,4 @@
-package ru.ts_parser.model;
+package ru.ts_parser.entity;
 
 import java.util.*;
 

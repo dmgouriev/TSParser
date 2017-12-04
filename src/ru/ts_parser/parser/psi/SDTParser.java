@@ -1,11 +1,11 @@
 package ru.ts_parser.parser.psi;
 
-import static ru.ts_parser.MpegCommonData.*;
-import static ru.ts_parser.Tools.binToInt;
-import ru.ts_parser.model.Tables;
-import ru.ts_parser.model.packet.Packet;
+import static ru.ts_parser.base.MpegCommonData.*;
+import static ru.ts_parser.tools.Tools.binToInt;
+import ru.ts_parser.entity.Tables;
+import ru.ts_parser.entity.packet.Packet;
 import ru.ts_parser.parser.DescriptorParser;
-import ru.ts_parser.parser.psi.base.PSIParserAbstract;
+import ru.ts_parser.base.PSIParserAbstract;
 
 /**
  *
@@ -58,10 +58,14 @@ public class SDTParser extends PSIParserAbstract {
 
             short descriptorsLoopLength = (short) binToInt(sectionBinary, position, position += descriptorsLengthLength);
 
+            if (serviceID == 1100) {
+                System.out.println("");
+            }
+            
             if ((descriptorsLoopLength *= byteBinaryLength) + position > (sectionLength * byteBinaryLength)) {
                 break;
             }
-
+            
             descriptor.loadDescriptors(serviceID, sectionBinary, descriptorsLoopLength, position, tables);
             position += descriptorsLoopLength;
         }

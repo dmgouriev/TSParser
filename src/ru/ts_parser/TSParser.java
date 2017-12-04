@@ -7,15 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import static ru.ts_parser.MpegCommonData.nil;
-import static ru.ts_parser.MpegCommonData.syncByte;
-import static ru.ts_parser.MpegCommonData.tsPacketSize;
+import static ru.ts_parser.base.MpegCommonData.nil;
+import static ru.ts_parser.base.MpegCommonData.syncByte;
+import static ru.ts_parser.base.MpegCommonData.tsPacketSize;
 
 public class TSParser {
 
     public static void main(String[] args) throws Exception {
 //        new TSParser().parse(new File("C:\\\\data\\mux_MYGICA_546000000_8000000_20171121083157.ts"));
-        new TSParser().parse(new File("/home/dmgouriev/tuner/mux_MYGICA_546000000_8000000_20171127172515.ts")); //mux_MYGICA_546000000_8000000_20171121083157.ts"));
+        new TSParser().parse(new File("/home/dmgouriev/tuner/mux_546000000_8000000_20171108114521.ts")); //mux_MYGICA_546000000_8000000_20171121083157.ts"));
     }
 
     public void parse(File file) {

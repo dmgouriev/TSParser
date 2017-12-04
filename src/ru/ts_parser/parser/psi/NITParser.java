@@ -1,12 +1,12 @@
 package ru.ts_parser.parser.psi;
 
-import static ru.ts_parser.MpegCommonData.*;
-import static ru.ts_parser.Tools.binToInt;
-import ru.ts_parser.model.Tables;
-import ru.ts_parser.model.packet.Packet;
+import static ru.ts_parser.base.MpegCommonData.*;
+import static ru.ts_parser.tools.Tools.binToInt;
+import ru.ts_parser.entity.Tables;
+import ru.ts_parser.entity.packet.Packet;
 import ru.ts_parser.parser.DescriptorParser;
 import ru.ts_parser.parser.ParserState;
-import ru.ts_parser.parser.psi.base.PSIParserAbstract;
+import ru.ts_parser.base.PSIParserAbstract;
 
 /**
  *

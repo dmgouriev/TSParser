@@ -1,11 +1,12 @@
 package ru.ts_parser;
 
+import ru.ts_parser.tools.Tools;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import static ru.ts_parser.MpegCommonData.*;
-import ru.ts_parser.model.Tables;
-import ru.ts_parser.model.packet.Packet;
+import static ru.ts_parser.base.MpegCommonData.*;
+import ru.ts_parser.entity.Tables;
+import ru.ts_parser.entity.packet.Packet;
 import ru.ts_parser.parser.header.AdaptationFieldParser;
 import ru.ts_parser.parser.header.HeaderParser;
 import ru.ts_parser.parser.Parser;
@@ -118,11 +119,6 @@ public class StreamParser extends Parser {
             if (packet.getTransportErrorIndicator() == 1) {
                 return true;
             }
-
-            if (packet.getIndex() == 44702 || packet.getIndex() == 44703) {
-                System.out.println(Tools.byteArrayToHex(packet.getData()) + "\n");
-            }
-
             if (packet.getPID() <= tsMaxPidValue) {
                 // анализ пакета
                 if (!isPATreceived) {
@@ -150,18 +146,10 @@ public class StreamParser extends Parser {
                                 default:
                             }
                         }
-
-//                        if (psiParser.isPSI(packet.getPID())) {
-//                            psiParser.analyzePSI(packet);
-//                            updateTables(psiParser);
-//                        } else if (psiParser.isPMT(packet.getPID())) {
-//                            PAT_PIDS.remove(packet.getPID());
-//                            if (psiParser.analyzePMT(packet) != null) {
-//                                updateTables(psiParser);
-//                            }
-//                        }
                     }
                 }
+                              
+                
             }
         }
 

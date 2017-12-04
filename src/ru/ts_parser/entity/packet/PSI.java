@@ -1,20 +1,37 @@
-package ru.ts_parser.model.packet.psi;
+package ru.ts_parser.entity.packet;
 
-public class PSI extends Payload {
+public class PSI {
 
     private short tableID;
     private byte sectionSyntaxIndicator;
     private int sectionLength;
+    protected byte[] data;
+    private final boolean isPSI;
+    private final boolean hasPESheader;
 
     public PSI(short tableID, byte SSI, int sectionLength, byte[] data) {
-        super(true, false);
+        this.hasPESheader = false;
+        this.isPSI = true;
         this.tableID = tableID;
         this.sectionSyntaxIndicator = SSI;
         this.sectionLength = sectionLength;
     }
 
     public PSI() {
-        super(true,false);
+        this.hasPESheader = false;
+        this.isPSI = true;
+    }
+    
+    public byte[] getData() {
+        return data;
+    }
+
+    public boolean hasPESheader() {
+        return hasPESheader;
+    }
+
+    public boolean isPSI() {
+        return isPSI;
     }
 
     public short getTableID() {
@@ -30,5 +47,3 @@ public class PSI extends Payload {
     }
 
 }
-
-
