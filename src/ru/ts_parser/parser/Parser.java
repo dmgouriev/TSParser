@@ -53,9 +53,6 @@ public abstract class Parser {
 
     public int[] parseNfields(byte[] packet, int pos, int length) {
         int position = pos, index = 0;
-        if (length < 0) {
-            return new int[0];
-        }
         int[] byteFields = new int[length];
         for (index = 0; index < length; index++) {
             try {

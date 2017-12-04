@@ -1,8 +1,6 @@
 package ru.ts_parser;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static ru.ts_parser.MpegCommonData.*;
@@ -11,7 +9,6 @@ import ru.ts_parser.model.packet.Packet;
 import ru.ts_parser.parser.header.AdaptationFieldParser;
 import ru.ts_parser.parser.header.HeaderParser;
 import ru.ts_parser.parser.Parser;
-import ru.ts_parser.parser.ParserState;
 import ru.ts_parser.parser.psi.NITParser;
 import ru.ts_parser.parser.psi.PATParser;
 import ru.ts_parser.parser.psi.PMTParser;
@@ -40,13 +37,10 @@ public class StreamParser extends Parser {
     private final AdaptationFieldParser adaptationFieldParser;
     private final ExecutorService parseExecutorService;
 
-    private final Set<Integer> PAT_PMT_PIDS = new HashSet<>();
-
     private long packetIndex = 0;
     boolean isPATreceived = false;
     private State state;
 
-    private ParserState parserState;
     private Tables parserTables;
 
     public StreamParser() {
@@ -60,7 +54,6 @@ public class StreamParser extends Parser {
         nitParser = new NITParser();
 
         packetIndex = 0;
-        parserState = null;
         parserTables = new Tables();
 
         this.parseExecutorService = Executors.newFixedThreadPool(1);
@@ -78,7 +71,7 @@ public class StreamParser extends Parser {
             @Override
             public void run() {
                 if (buffer.length >= tsPacketSize) {
-                     for (int i = 0; i < buffer.length; i += tsPacketSize) {
+                    for (int i = 0; i < buffer.length; i += tsPacketSize) {
                         i = seek(buffer, i);
                         if ((i == nil) || ((i + tsPacketSize) > buffer.length)) {
                             stop();
@@ -122,11 +115,21 @@ public class StreamParser extends Parser {
             //получение 4 байтов заголовка
             int header = headerParser.parseHeader(packetBufferMain);
             Packet packet = headerParser.analyzeHeader(Tools.toBinary(header, tsHeaderBinaryLength), packetBufferMain, packetIndex++);
+            if (packet.getTransportErrorIndicator() == 1) {
+                return true;
+            }
+
+            if (packet.getIndex() == 44702 || packet.getIndex() == 44703) {
+                System.out.println(Tools.byteArrayToHex(packet.getData()) + "\n");
+            }
 
             if (packet.getPID() <= tsMaxPidValue) {
                 // анализ пакета
                 if (!isPATreceived) {
-                    parserState = parsePAT(packet);
+                    if (packet.getPID() == PSI_TABLE_TYPE.PAT.PID) {
+                        patParser.parse(packet, parserTables);
+                        isPATreceived = patParser.getParserResult();
+                    }
                 } else {
                     if (hasAdaptationField(packet.getAdaptationFieldControl())) {
                         short adaptationFieldHeader = adaptationFieldParser.parseAdaptationFieldHeader(packet.getData());
@@ -135,26 +138,17 @@ public class StreamParser extends Parser {
                     }
                     if (hasPayload(packet.getAdaptationFieldControl())) {
                         if (parserTables.getPMTSet().contains(packet.getPID())) {
-
-                            parserState = pmtParser.parse(packet, parserTables, parserState);
-
-                        } else if (isPSI(packet.getPID()) || (parserState!= null && isPSI(parserState.getLastPID()) && parserState.needContinue())) {
-
-                            int pid = packet.getPID();
-                            if (parserState != null && parserState.needContinue()) {
-                                pid = parserState.getType().PID;
-                            }
-                            switch (pid) {
+                            pmtParser.parse(packet, parserTables);
+                        } else if (isPSI(packet.getPID())) {
+                            switch (packet.getPID()) {
                                 case NITpid:
-                                    parserState = nitParser.parse(packet, parserTables, parserState);
+                                    nitParser.parse(packet, parserTables);
                                     break;
                                 case SDTpid:
-                                    parserState = sdtParser.parse(packet, parserTables, parserState);
+                                    sdtParser.parse(packet, parserTables);
                                     break;
                                 default:
-                                    parserState = null;
                             }
-
                         }
 
 //                        if (psiParser.isPSI(packet.getPID())) {
@@ -170,37 +164,8 @@ public class StreamParser extends Parser {
                 }
             }
         }
+
         return true;
-    }
-
-    public ParserState parsePAT(Packet packet) {
-        if (isContinuePacket(PSI_TABLE_TYPE.PAT) || (hasPayload(packet.getAdaptationFieldControl()) && packet.getPID() == PSI_TABLE_TYPE.PAT.PID)) {
-            ParserState result = patParser.parse(packet, parserTables, parserState);
-            if (!result.needContinue()) {
-                isPATreceived = true;
-            }
-            return result;
-//            parserState = psiParser.analyzePAT(packet)
-//            if (psiParser.analyzePAT(packet) != null) {
-//                updateTables(psiParser);
-//                isPATreceived = true;
-//                Map<Integer, Integer> PATmap = tables.getPATmap();
-//                for (int progId : PATmap.keySet()) {
-//                    PAT_PMT_PIDS.add(PATmap.get(progId));
-//                }
-//                PAT_PMT_PIDS.remove((Integer) 0);
-//                System.out.println(tables.getPATmap());
-//            }
-        }
-        return null;
-    }
-
-    public boolean isContinuePacket(PSI_TABLE_TYPE type) {
-        return (parserState == null ? false : ((parserState.needContinue() && parserState.getType() == type)));
-    }
-
-    public boolean isFinished() {
-        return PAT_PMT_PIDS.isEmpty();
     }
 
 //    private void updateTables(Parser parser) {

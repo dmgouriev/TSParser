@@ -18,7 +18,7 @@ public class Packet {
 
     private byte[] data;
 
-    public Packet(long index, byte transportErrorIndicator, byte payloadStartIndicator, byte transportPriority, short PID, byte transportScramblingControl, byte adaptationFieldControl, byte continuityCounter, short adaptationFieldLength, byte[] data) {
+    public Packet(long index, byte transportErrorIndicator, byte payloadStartIndicator, byte transportPriority, short PID, byte transportScramblingControl, byte adaptationFieldControl, byte continuityCounter, byte[] data) {
         this.index = index;
         this.transportErrorIndicator =  transportErrorIndicator;
         this.payloadStartIndicator =  payloadStartIndicator;

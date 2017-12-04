@@ -30,7 +30,6 @@ public class HeaderParser extends Parser {
                 tranportScramblingControl,
                 adaptationFieldControl,
                 continuityCounter,
-                (short) 0,
                 packet
         );
     }

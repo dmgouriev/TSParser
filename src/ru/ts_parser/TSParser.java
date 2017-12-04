@@ -14,9 +14,8 @@ import static ru.ts_parser.MpegCommonData.tsPacketSize;
 public class TSParser {
 
     public static void main(String[] args) throws Exception {
-        new TSParser().parse(new File("C:\\\\data\\mux_MYGICA_546000000_8000000_20171121083157.ts"));
-//        TSData info = new TSParser().parse(new File("/home/dmgouriev/Desktop/TS-Visualizer-master/DOWNLOAD/sampleSmall.ts"));
-
+//        new TSParser().parse(new File("C:\\\\data\\mux_MYGICA_546000000_8000000_20171121083157.ts"));
+        new TSParser().parse(new File("/home/dmgouriev/tuner/mux_MYGICA_546000000_8000000_20171127172515.ts")); //mux_MYGICA_546000000_8000000_20171121083157.ts"));
     }
 
     public void parse(File file) {
@@ -47,16 +46,13 @@ public class TSParser {
 //            return null;
 //        }
 
-        
 //        try {
 //            try(PrintWriter out = new PrintWriter("/home/dmgouriev/tuner/bytes1.txt")) {
 //                out.println( Tools.byteArrayToHex(buffer) );
 //            }
-            
-            //01 C0 C2 C0 C1
-            
-            StreamParser parser = new StreamParser();
-            parser.parse(buffer);
+        //01 C0 C2 C0 C1
+        StreamParser parser = new StreamParser();
+        parser.parse(buffer);
 //        } catch (FileNotFoundException ex) {
 //            ex.printStackTrace();
 //        }

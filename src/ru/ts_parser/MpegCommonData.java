@@ -84,6 +84,9 @@ public class MpegCommonData {
     public final static int elementaryPIDlength = 13;
 
     
+    public final static int eightBitslength = 8;
+    public final static int sixteenBitslength = 16;
+    
     public final static int sixteenIDlength = 16;
     public final static int serviceIDlength = 16;
     public final static int eventIDlength = 16;
@@ -185,6 +188,10 @@ public class MpegCommonData {
     //MPEG SI descriptors
     public static final int network_name_descriptor = 0x40;	//	NIT
     public static final int service_list_descriptor = 0x41;	//	NIT, BAT
+    public static final int extension_descriptor = 0x7F;	//	NIT, BAT
+    public static final int t2_delivery_system_descriptor = 0x4;
+    
+    
     public static final int stuffing_descriptor = 0x42;	//	NIT, BAT, SDT, EIT, SIT
     public static final int satellite_delvery_system_descriptor = 0x43	;	//	NIT
     public static final int cable_delivery_system_descriptor = 0x44	;	//	NIT

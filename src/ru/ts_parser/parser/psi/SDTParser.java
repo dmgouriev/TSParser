@@ -5,7 +5,6 @@ import static ru.ts_parser.Tools.binToInt;
 import ru.ts_parser.model.Tables;
 import ru.ts_parser.model.packet.Packet;
 import ru.ts_parser.parser.DescriptorParser;
-import ru.ts_parser.parser.ParserState;
 import ru.ts_parser.parser.psi.base.PSIParserAbstract;
 
 /**
@@ -21,16 +20,22 @@ public class SDTParser extends PSIParserAbstract {
     }
     
     @Override
-    protected ParserState parseSection(Packet packet, byte[] sectionBinary, int sectionLength, int position, ParserState newState, Tables tables) {
+    protected void parseSection(Packet packet, byte[] sectionBinary, int sectionLength, int position, Tables tables) {
         int transportStreamID = (int) binToInt(sectionBinary, position = 0, position += serviceIDlength);
         tables.updateTransportStreamIdSet(transportStreamID);
-        /*
-        byte versionNum = (byte) binToInt(sectionBinary, position += 2, position += versionNumLength);
+        
+//        byte versionNum = (byte) binToInt(sectionBinary, position += 2, position += versionNumLength);
+        position += 7;
+
         byte currentNextIndicator = sectionBinary[position++];
-        short sectionNum = (short) binToInt(sectionBinary, position, position += sectionNumLength);
-        short lastSectionNum = (short) binToInt(sectionBinary, position, position += sectionNumLength);
-        */
-        position += 24;
+        if (currentNextIndicator != 1) {
+            setParserState(null);
+            return;
+        }
+        
+//        short sectionNum = (short) binToInt(sectionBinary, position, position += sectionNumLength);
+//        short lastSectionNum = (short) binToInt(sectionBinary, position, position += sectionNumLength);
+        position += 16;
         
         //int originalNetworkID = (int) binToInt(sectionBinary, position, position += networkIDlength);
         position += 16;
@@ -61,9 +66,8 @@ public class SDTParser extends PSIParserAbstract {
             position += descriptorsLoopLength;
         }
 
-        newState.setNeedContinue(false);
         fullPackageBuffer = null;
-        return newState;
+        setParserState(null);
     }
 
     @Override
