@@ -66,9 +66,4 @@ public class NITParser extends PSIParserAbstract {
         clearPacketBuffer();
     }
 
-    @Override
-    protected PSI_TABLE_TYPE getParserPSITableType() {
-        return PSI_TABLE_TYPE.NIT;
-    }
-
 }

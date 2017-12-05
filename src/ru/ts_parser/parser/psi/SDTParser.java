@@ -70,9 +70,4 @@ public class SDTParser extends PSIParserAbstract {
         clearPacketBuffer();
     }
 
-    @Override
-    protected PSI_TABLE_TYPE getParserPSITableType() {
-        return PSI_TABLE_TYPE.SDT;
-    }
-
 }

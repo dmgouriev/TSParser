@@ -12,7 +12,7 @@ import ru.ts_parser.entity.Packet;
  * @author dmgouriev
  */
 public class PMTParser extends PSIParserAbstract {
-    
+
     final int reserved = 2; //MPEG константа
 
     @Override
@@ -24,16 +24,16 @@ public class PMTParser extends PSIParserAbstract {
 
         byte currentNextIndicator = sectionBinary[position++];
         if (currentNextIndicator != 1) {
-clearPacketBuffer();
+            clearPacketBuffer();
             return;
         }
-        
+
 //        byte sectionNum = (byte) binToInt(sectionBinary, position, position += sectionNumLength);
 //        byte lastSectionNum = (byte) binToInt(sectionBinary, position, position += sectionNumLength);
 //        short PCR_PID = (short) binToInt(sectionBinary, position += reserved + 1, position += PCR_PIDlength);
         position += 32;
-        
-        short programInfoLength = (short) binToInt(sectionBinary, position += (reserved*2), position += twelveLengthLength);
+
+        short programInfoLength = (short) binToInt(sectionBinary, position += (reserved * 2), position += twelveLengthLength);
 
         int nLoopDescriptorsLength = programInfoLength * byteBinaryLength;
         position += nLoopDescriptorsLength;
@@ -46,16 +46,11 @@ clearPacketBuffer();
             position += ESinfoLength * byteBinaryLength;
             tables.updateESMap(elementaryPID, streamType);
             tables.updatePMTMap(elementaryPID, programNum);
-        }        
+        }
         tables.decrPMTSet(packet.getPID());
 
         clearPacketBuffer();
         setParsedFlag();
     }
 
-    @Override
-    protected PSI_TABLE_TYPE getParserPSITableType() {
-        return PSI_TABLE_TYPE.PMT;
-    }
-    
 }

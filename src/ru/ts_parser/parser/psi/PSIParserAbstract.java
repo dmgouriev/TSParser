@@ -80,6 +80,4 @@ public abstract class PSIParserAbstract extends Parser {
 
     protected abstract void parseSection(Packet packet, byte[] sectionBinary, int sectionLength, int position, short tableID, TSTableData tables);
 
-    protected abstract PSI_TABLE_TYPE getParserPSITableType();
-
 }

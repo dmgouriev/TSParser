@@ -53,9 +53,4 @@ public class PATParser extends PSIParserAbstract {
         setParsedFlag();
     }
 
-    @Override
-    protected PSI_TABLE_TYPE getParserPSITableType() {
-        return PSI_TABLE_TYPE.PAT;
-    }
-
 }

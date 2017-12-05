@@ -159,7 +159,7 @@ public class StreamParser extends Parser {
             if (packet.getPID() <= tsMaxPidValue) {
                 // анализ пакета
                 if (!hasPAT) {
-                    if (packet.getPID() == PSI_TABLE_TYPE.PAT.PID) {
+                    if (packet.getPID() == PATpid) {
                         patParser.parse(packet, parserTables);
                         hasPAT = patParser.getParserResult();
                     }
