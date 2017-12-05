@@ -1,10 +1,9 @@
 package ru.ts_parser.parser.psi;
 
-import static ru.ts_parser.base.MpegCommonData.*;
+import static ru.ts_parser.MPEGConstant.*;
 import static ru.ts_parser.tools.Tools.binToInt;
-import ru.ts_parser.entity.Tables;
-import ru.ts_parser.entity.packet.Packet;
-import ru.ts_parser.base.PSIParserAbstract;
+import ru.ts_parser.TSTableData;
+import ru.ts_parser.entity.Packet;
 
 /**
  *
@@ -15,16 +14,16 @@ public class PATParser extends PSIParserAbstract {
     final int reserved = 2; //MPEG константа
 
     @Override
-    protected void parseSection(Packet packet, byte[] sectionBinary, int sectionLength, int position, Tables tables) {
+    protected void parseSection(Packet packet, byte[] sectionBinary, int sectionLength, int position, short tableID, TSTableData tables) {
         int transportStreamID = (int) binToInt(sectionBinary, position = 0, position += transportStreamIDlength);
-        tables.updateCurrentTransportStreamID(transportStreamID);
+        tables.setCurrentTransportStreamID(transportStreamID);
 
 //        short versionNum = (short) binToInt(sectionBinary, position += reserved, position += versionNumLength);
         position += 7;
 
         byte currentNextIndicator = sectionBinary[position++];
         if (currentNextIndicator != 1) {
-            setParserState(null);
+            clearPacketBuffer();
             return;
         }
 
@@ -46,15 +45,12 @@ public class PATParser extends PSIParserAbstract {
             }
             //получение PID пакета, содержащего таблицу PMT программы
             int programMapPID = (int) binToInt(sectionBinary, position += 3, position += PCR_PIDlength);
-            tables.getPATmap().put(programNum, programMapPID);
-
+            tables.updatePATMap(programNum, programMapPID);
             tables.incrPMTSet(programMapPID);
-            tables.incrSDTSet(programNum);
-
         }
-        fullPackageBuffer = null;
-        setParserState(null);
+        clearPacketBuffer();
         setParserResult(true);
+        setParsedFlag();
     }
 
     @Override

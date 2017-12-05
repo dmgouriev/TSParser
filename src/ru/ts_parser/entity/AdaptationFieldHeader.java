@@ -1,4 +1,4 @@
-package ru.ts_parser.entity.packet;
+package ru.ts_parser.entity;
 
 
 public class AdaptationFieldHeader {

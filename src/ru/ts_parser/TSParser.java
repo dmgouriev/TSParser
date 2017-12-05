@@ -7,15 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import static ru.ts_parser.base.MpegCommonData.nil;
-import static ru.ts_parser.base.MpegCommonData.syncByte;
-import static ru.ts_parser.base.MpegCommonData.tsPacketSize;
 
 public class TSParser {
 
     public static void main(String[] args) throws Exception {
 //        new TSParser().parse(new File("C:\\\\data\\mux_MYGICA_546000000_8000000_20171121083157.ts"));
-        new TSParser().parse(new File("/home/dmgouriev/tuner/mux_546000000_8000000_20171108114521.ts")); //mux_MYGICA_546000000_8000000_20171121083157.ts"));
+        new TSParser().parse(new File("/home/dmgouriev/tuner/mux_MYGICA_546000000_8000000_20171127172515.ts")); //mux_MYGICA_546000000_8000000_20171121083157.ts"));
     }
 
     public void parse(File file) {
@@ -23,49 +20,8 @@ public class TSParser {
     }
 
     public static void parse(byte[] buffer) {
-//        try {
-//
-//            for (int i = nil; i < buffer.length; i += tsPacketSize) { //prechádzanie celého transportného toku v cykle s posuvom veľkosi paketu
-//
-//                if (i == nil) { //na začiatku vyhľadá prvý transportný paket
-//                    i = seekBeginning(buffer, 0);
-//                    if (i == nil) { //ak sa nenašiel, skončí
-//                        throw new IOException("File does not contain TS stream!");
-//                    }
-//                }
-//                byte[] packetBuf = Arrays.copyOfRange(buffer, i, i + tsPacketSize);
-//                if (!parser.parse(packetBuf)) {
-//                    break;
-//                };
-//                
-//            }
-//            System.out.println(parser.isFinished());
-//            return new TSData(parser.getTables());
-//        } catch (IOException e) {
-//            e.printStackTrace(System.err);
-//            return null;
-//        }
-
-//        try {
-//            try(PrintWriter out = new PrintWriter("/home/dmgouriev/tuner/bytes1.txt")) {
-//                out.println( Tools.byteArrayToHex(buffer) );
-//            }
-        //01 C0 C2 C0 C1
-        StreamParser parser = new StreamParser();
+        StreamParser parser = StreamParser.getInstance();
         parser.parse(buffer);
-//        } catch (FileNotFoundException ex) {
-//            ex.printStackTrace();
-//        }
-    }
-
-    private int seekBeginning(byte[] buffer, int i) {
-
-        for (; i < buffer.length - tsPacketSize; i++) {
-            if (buffer[i] == syncByte && buffer[i + tsPacketSize] == syncByte) {
-                return i;
-            }
-        }
-        return nil;
     }
 
     private byte[] getBytes(File file) {

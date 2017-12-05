@@ -6,7 +6,7 @@
 package ru.ts_parser.tools;
 
 import java.util.Arrays;
-import static ru.ts_parser.base.MpegCommonData.*;
+import static ru.ts_parser.MPEGConstant.*;
 import java.util.Map;
 
 /**

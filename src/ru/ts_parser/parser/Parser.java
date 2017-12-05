@@ -1,10 +1,10 @@
 package ru.ts_parser.parser;
 
-import ru.ts_parser.entity.packet.Packet;
-import static ru.ts_parser.base.MpegCommonData.*;
+import ru.ts_parser.entity.Packet;
+import static ru.ts_parser.MPEGConstant.*;
 import static ru.ts_parser.tools.Tools.binToInt;
 import static ru.ts_parser.tools.Tools.getBit;
-import ru.ts_parser.entity.packet.PSI;
+import ru.ts_parser.entity.PSI;
 
 public abstract class Parser {
 

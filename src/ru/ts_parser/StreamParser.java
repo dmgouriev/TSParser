@@ -4,9 +4,8 @@ import ru.ts_parser.tools.Tools;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import static ru.ts_parser.base.MpegCommonData.*;
-import ru.ts_parser.entity.Tables;
-import ru.ts_parser.entity.packet.Packet;
+import static ru.ts_parser.MPEGConstant.*;
+import ru.ts_parser.entity.Packet;
 import ru.ts_parser.parser.header.AdaptationFieldParser;
 import ru.ts_parser.parser.header.HeaderParser;
 import ru.ts_parser.parser.Parser;
@@ -20,46 +19,66 @@ import ru.ts_parser.parser.psi.SDTParser;
  * @author dmgouriev
  */
 public class StreamParser extends Parser {
+    
+    public static StreamParser getInstance() {
+        return StreamParserHolder.INSTANCE;
+    }
+    
+    private static class StreamParserHolder {
 
+        private static final StreamParser INSTANCE = new StreamParser();
+    }
+    
     public static enum State {
         SUSPENDED,
         RUNNING,
         STOPPED
     }
 
-    private final HeaderParser headerParser;
-//    private final PSIparser psiParser;
+    private HeaderParser headerParser;
+    private AdaptationFieldParser adaptationFieldParser;
 
-    private final PATParser patParser;
-    private final PMTParser pmtParser;
-    private final SDTParser sdtParser;
-    private final NITParser nitParser;
+    private PATParser patParser;
+    private PMTParser pmtParser;
+    private SDTParser sdtParser;
+    private NITParser nitParser;
 
-    private final AdaptationFieldParser adaptationFieldParser;
-    private final ExecutorService parseExecutorService;
+    private boolean hasPAT = false;
+    private boolean hasPMT = false;
+    private boolean hasSDT = false;
+    private boolean hasNIT = false;
 
-    private long packetIndex = 0;
-    boolean isPATreceived = false;
+    private ExecutorService parseExecutorService;
     private State state;
 
-    private Tables parserTables;
+    private long packetIndex = 0;
+    private TSTableData parserTables;
 
-    public StreamParser() {
+    private StreamParser() {
+        reInitThis();
+    }
+    
+    private void reInitThis() {
         headerParser = new HeaderParser();
         adaptationFieldParser = new AdaptationFieldParser();
-//        psiParser = new PSIparser(tables);
 
         patParser = new PATParser();
         pmtParser = new PMTParser();
         sdtParser = new SDTParser();
         nitParser = new NITParser();
 
+        hasPAT = false;
+        hasPMT = false;
+        hasSDT = false;
+        hasNIT = false;
+
         packetIndex = 0;
-        parserTables = new Tables();
+        parserTables = new TSTableData();
 
         this.parseExecutorService = Executors.newFixedThreadPool(1);
         this.state = State.SUSPENDED;
     }
+    
 
     public void parse(final byte[] buffer) {
         if (state == State.STOPPED) {
@@ -79,25 +98,43 @@ public class StreamParser extends Parser {
                             break;
                         }
                         parsePacket(Arrays.copyOfRange(buffer, i, i + tsPacketSize));
+                        if (isParsed()) {
+                            System.out.println("Analized packets for full parse: " + packetIndex);
+                            System.out.println(parserTables.toString());
+                            stop();
+                            break;
+                        }
                     }
                 } else {
                     parsePacket(buffer);
+                    if (isParsed()) {
+                            System.out.println("Analized packets for full parse: " + packetIndex);
+                            System.out.println(parserTables.toString());
+                            stop();
+                        }
                 }
-                System.out.println(new TSData(getTables()).getPMTString());
             }
         });
+    }
+
+    public boolean isParsed() {
+        return (hasPAT && hasPMT && hasSDT && hasNIT
+                && patParser.hasParsedFlag() && pmtParser.hasParsedFlag() && sdtParser.hasParsedFlag() && nitParser.hasParsedFlag());
     }
 
     public State getState() {
         return state;
     }
 
-    public void restart() {
-        state = State.STOPPED;
+    public void start() {
+        stop();
+        reInitThis();
     }
 
     public void stop() {
-        parseExecutorService.shutdownNow();
+        if (parseExecutorService != null) {
+            parseExecutorService.shutdownNow();
+        }
         state = State.STOPPED;
     }
 
@@ -121,55 +158,48 @@ public class StreamParser extends Parser {
             }
             if (packet.getPID() <= tsMaxPidValue) {
                 // анализ пакета
-                if (!isPATreceived) {
+                if (!hasPAT) {
                     if (packet.getPID() == PSI_TABLE_TYPE.PAT.PID) {
                         patParser.parse(packet, parserTables);
-                        isPATreceived = patParser.getParserResult();
+                        hasPAT = patParser.getParserResult();
                     }
                 } else {
                     if (hasAdaptationField(packet.getAdaptationFieldControl())) {
                         short adaptationFieldHeader = adaptationFieldParser.parseAdaptationFieldHeader(packet.getData());
-                        byte[] binaryAdaptationFieldHeader = Tools.toBinary(adaptationFieldHeader, tsAdaptationFieldHeaderBinaryLength); //prevod na binárne pole
-                        packet.setAdaptationFieldHeader(adaptationFieldParser.analyzeAdaptationFieldHeader(binaryAdaptationFieldHeader)); //analýza adaptačného poľa
+                        byte[] binaryAdaptationFieldHeader = Tools.toBinary(adaptationFieldHeader, tsAdaptationFieldHeaderBinaryLength);
+                        packet.setAdaptationFieldHeader(adaptationFieldParser.analyzeAdaptationFieldHeader(binaryAdaptationFieldHeader));
                     }
                     if (hasPayload(packet.getAdaptationFieldControl())) {
-                        if (parserTables.getPMTSet().contains(packet.getPID())) {
+                        if (!hasPMT && parserTables.getPMTSet().contains(packet.getPID())) {
                             pmtParser.parse(packet, parserTables);
+                            hasPMT = parserTables.getPMTSet().isEmpty();
                         } else if (isPSI(packet.getPID())) {
                             switch (packet.getPID()) {
                                 case NITpid:
-                                    nitParser.parse(packet, parserTables);
+                                    if (!hasNIT) {
+                                        nitParser.parse(packet, parserTables);
+                                        hasNIT = nitParser.getParserResult();
+                                    }
                                     break;
                                 case SDTpid:
-                                    sdtParser.parse(packet, parserTables);
+                                    if (!hasSDT && nitParser.hasParsedFlag()) {
+                                        sdtParser.parse(packet, parserTables);
+                                        hasSDT = parserTables.getTransportStreamSet().isEmpty();
+                                    }
                                     break;
                                 default:
                             }
                         }
                     }
                 }
-                              
-                
+
             }
         }
 
         return true;
     }
 
-//    private void updateTables(Parser parser) {
-//
-//        if (parser instanceof PSIparser) {
-//            tables.setPMTnumber(parser.tables.getPMTnumber());
-//            tables.setPATmap(parser.tables.getPATmap());
-//            tables.setPMTmap(parser.tables.getPMTmap());
-//            tables.setESmap(parser.tables.getESmap());
-//            tables.setProgramNameMap(parser.tables.getProgramNameMap());
-//            tables.setServiceNamesMap(parser.tables.getServiceNamesMap());
-//            tables.setServiceNamesMap(parser.tables.getServiceNamesMap());
-//            tables.setPCRpmtMap(parser.tables.getPCRpmtMap());
-//        }
-//    }
-    public Tables getTables() {
+    public TSTableData getTables() {
         return this.parserTables;
     }
 

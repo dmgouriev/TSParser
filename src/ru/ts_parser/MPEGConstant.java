@@ -1,30 +1,29 @@
-package ru.ts_parser.base;
+package ru.ts_parser;
 
-
-public class MpegCommonData {
+public class MPEGConstant {
 
     public enum PSI_TABLE_TYPE {
         PAT(PATpid),
         PMT(PMTpid),
         SDT(SDTpid),
         NIT(NITpid);
-        
-        public int PID; 
-        
+
+        public int PID;
+
         private PSI_TABLE_TYPE(int PID) {
             this.PID = PID;
         }
-        
+
     }
-    
+
     public final static int nil = -1;
-    
+
     public static final int PATpid = 0x00; // PAT (program association table)
     public static final int NITpid = 0x10; // NIT (Network Information Table)
     public static final int SDTpid = 0x11; // SDT (Service Description Table) (Bouquet Association Table)
     public static final int PMTpid = nil;
-    public static final int nullPacketPID = 0x1FFF;   
-     
+    public static final int nullPacketPID = 0x1FFF;
+
     public static final int intBinaryLength = 32;
     public static final int byteBinaryLength = 8;
     public static final int charSize = 8;
@@ -65,7 +64,7 @@ public class MpegCommonData {
     public final static int sectionNumLength = 8;
     public final static int transportStreamIDlength = 16;
     public final static int CRClength = 32;
-    public final static int CRClengthByte = CRClength/byteBinaryLength;
+    public final static int CRClengthByte = CRClength / byteBinaryLength;
     public final static int AFLlength = 1;
 
     public final static int mandatoryPATfields = 72;
@@ -83,10 +82,9 @@ public class MpegCommonData {
     public final static int streamTypeLength = 8;
     public final static int elementaryPIDlength = 13;
 
-    
     public final static int eightBitslength = 8;
     public final static int sixteenBitslength = 16;
-    
+
     public final static int sixteenIDlength = 16;
     public final static int serviceIDlength = 16;
     public final static int eventIDlength = 16;
@@ -131,8 +129,6 @@ public class MpegCommonData {
     public final static int descriptorTagLength = 8;
     public final static int descriptorLengthLength = 8;
 
-    
-
     public static final int PAStableID = 0x00;
     public static final int CAStableID = 0x01;
     public static final int PMStableID = 0x02;
@@ -165,95 +161,90 @@ public class MpegCommonData {
     public static final int payloadStartIcon = 0xFC;
     public static final int timestampIcon = 0xFD;
 
-
     //MPEG ES descriptors
-    public static final int	video_stream_descriptor	= 0x02;
-    public static final int	audio_stream_descriptor	= 0x03;
-    public static final int	hierarchy_descriptor = 0x04;
+    public static final int video_stream_descriptor = 0x02;
+    public static final int audio_stream_descriptor = 0x03;
+    public static final int hierarchy_descriptor = 0x04;
     public static final int registration_descriptor = 0x05;
-    public static final int	data_stream_descriptor = 0x06;
-    public static final int	target_background_grid_descriptor =	0x07;
-    public static final int	video_window_descriptor	= 0x08;
-    public static final int	CA_descriptor =	0x09;
-    public static final int	ISO_639_language_descriptor	= 0x0A;
-    public static final int	system_clock_descriptor	= 0x0B;
-    public static final int	multiplex_buffer_utilization_descriptor	= 0x0C;
-    public static final int	copyright_descriptor =	0x0D;
-    public static final int	maximum_bitrate_descriptor = 0x0E;
-    public static final int	private_data_indicator_descriptor =	0x0F;
-    public static final int	smoothing_buffer_descriptor	= 0x10;
-    public static final int	STD_descriptor = 0x11;
-    public static final int	BP_descriptor =	0x12;
+    public static final int data_stream_descriptor = 0x06;
+    public static final int target_background_grid_descriptor = 0x07;
+    public static final int video_window_descriptor = 0x08;
+    public static final int CA_descriptor = 0x09;
+    public static final int ISO_639_language_descriptor = 0x0A;
+    public static final int system_clock_descriptor = 0x0B;
+    public static final int multiplex_buffer_utilization_descriptor = 0x0C;
+    public static final int copyright_descriptor = 0x0D;
+    public static final int maximum_bitrate_descriptor = 0x0E;
+    public static final int private_data_indicator_descriptor = 0x0F;
+    public static final int smoothing_buffer_descriptor = 0x10;
+    public static final int STD_descriptor = 0x11;
+    public static final int BP_descriptor = 0x12;
 
     //MPEG SI descriptors
     public static final int network_name_descriptor = 0x40;	//	NIT
     public static final int service_list_descriptor = 0x41;	//	NIT, BAT
     public static final int extension_descriptor = 0x7F;	//	NIT, BAT
     public static final int t2_delivery_system_descriptor = 0x4;
-    
-    
+
     public static final int stuffing_descriptor = 0x42;	//	NIT, BAT, SDT, EIT, SIT
-    public static final int satellite_delvery_system_descriptor = 0x43	;	//	NIT
-    public static final int cable_delivery_system_descriptor = 0x44	;	//	NIT
+    public static final int satellite_delvery_system_descriptor = 0x43;	//	NIT
+    public static final int cable_delivery_system_descriptor = 0x44;	//	NIT
     public static final int VBI_data_descriptor = 0x45;	//	PMT
     public static final int VBI_teletext_descriptor = 0x46;	//	PMT
     public static final int bouquet_name_descriptor = 0x47;	//	BAT, SDT, SIT
     public static final int service_descriptor = 0x48;	//	SDT, SIT
-    public static final int country_availability_descriptor = 0x49	;	//	BAT, SDT< SIT
-    public static final int linkage_descriptor	= 0x4A;	//	NIT, BAT, SDT, EIT, SIT
+    public static final int country_availability_descriptor = 0x49;	//	BAT, SDT< SIT
+    public static final int linkage_descriptor = 0x4A;	//	NIT, BAT, SDT, EIT, SIT
     public static final int NVOD_reference_descriptor = 0x4B;	//	SDT, SIT
     public static final int time_shifted_service_descriptor = 0x4C;	//	SDT, SIT
-    public static final int short_event_descriptor	= 0x4D;	//	EIT, SIT
+    public static final int short_event_descriptor = 0x4D;	//	EIT, SIT
     public static final int extended_event_descriptor = 0x4E;	//	EIT, SIT
     public static final int time_shifted_event_descriptor = 0x4F;	//	EIT, SIT
     public static final int component_descriptor = 0x50;	//	EIT, SIT
     public static final int mosaic_descriptor = 0x51;	//	SDT, PMT
     public static final int stream_identifier_descriptor = 0x52;	//	PMT
     public static final int CA_identifier_descriptor = 0x53;	//	BAT, SDT, EIT, SIT
-    public static final int content_descriptor	= 0x54;	//	EIT, SIT
-    public static final int parental_rating_descriptor	= 0x55;	//	EIT, SIT
-    public static final int teletext_descriptor = 0x56	;	//	PMT
+    public static final int content_descriptor = 0x54;	//	EIT, SIT
+    public static final int parental_rating_descriptor = 0x55;	//	EIT, SIT
+    public static final int teletext_descriptor = 0x56;	//	PMT
     public static final int telephone_descriptor = 0x57;	//	PMT
     public static final int local_time_offset_descriptor = 0x58;	//	TOT
     public static final int subtitling_descriptor = 0x59;	//	NIT
-    public static final int terrestrial_delivery_system_descriptor	= 0x5A;	//	NIT
+    public static final int terrestrial_delivery_system_descriptor = 0x5A;	//	NIT
     public static final int multilingual_network_name_descriptor = 0x5B;	//	NIT
-    public static final int multilingual_bouquet_name_descriptor =	0x5C;	//	BAT
-    public static final int multilingual_service_name_descriptor =	0x5D;	//	SDT, SIT
+    public static final int multilingual_bouquet_name_descriptor = 0x5C;	//	BAT
+    public static final int multilingual_service_name_descriptor = 0x5D;	//	SDT, SIT
     public static final int multilingual_component_descriptor = 0x5E;	//	EIT, SIT
     public static final int private_data_specifier_descriptor = 0x5F;	//	NIT, BAT, SDT, EIT, PMT, SIT
     public static final int service_mode_descriptor = 0x60;	//	PMT
     public static final int short_smoothing_buffer_descriptor = 0x61;	//	EIT, SIT
     public static final int frequency_list_descriptor = 0x62;	//	NIT
-    public static final int partial_tranport_stream_descriptor	= 0x63;	//	SIT
+    public static final int partial_tranport_stream_descriptor = 0x63;	//	SIT
     public static final int data_broadcast_descriptor = 0x64;	//	PMT
     public static final int CA_system_descriptor = 0x65;   //	PMT, EIT
     public static final int data_broadcast_id_descriptor = 0x66;	//	PMT
     public static final int transport_stream_descriptor = 0x67;	//	 
     public static final int DSNG_descriptor = 0x68;	//	 
-    public static final int PDC_descriptor	= 0x69;	//	EIT
+    public static final int PDC_descriptor = 0x69;	//	EIT
     public static final int AC3_descriptor = 0x6A;	//	PMT
-    public static final int ancilliary_data_descriptor	= 0x6B;	//	PMT
+    public static final int ancilliary_data_descriptor = 0x6B;	//	PMT
     public static final int cell_list_descriptor = 0x6C;	//	NIT
-    public static final int cell_frequency_link_descriptor	= 0x6D;	//	NIT
+    public static final int cell_frequency_link_descriptor = 0x6D;	//	NIT
     public static final int announcement_support_descriptor = 0x6E;	//	NIT
-    public static final int user_defined_descriptor = 0x80-0xFE;	//TODO this is range, not subtraction
+    public static final int user_defined_descriptor = 0x80 - 0xFE;	//TODO this is range, not subtraction
 
     public enum TimestampType {
         PCR, OPCR, PTS, DTS
     }
 
     public static String getElementaryStreamDescriptor(Integer descriptor) {
-        if (descriptor == null){
+        if (descriptor == null) {
             return "Unidentified ES descriptor";
-        }
-        else if ( descriptor>=0x1C && descriptor<=0x7F) {
+        } else if (descriptor >= 0x1C && descriptor <= 0x7F) {
             return "ITU-T Rec. H.222 | ISO/IEC 13818-1 Reserved";
-        }
-        else if ( descriptor>=0x80 && descriptor<=0xFF) {
+        } else if (descriptor >= 0x80 && descriptor <= 0xFF) {
             return "User defined";
-        }
-        else {
+        } else {
             switch (descriptor) {
                 case 0x00:
                     return "Reserved";
@@ -317,7 +308,6 @@ public class MpegCommonData {
         }
     }
 
-
     public static String getLoopDescriptor(int descriptor) {
         if (descriptor == 0x00 || descriptor == 0x01) {
             return "Reserved";
@@ -367,43 +357,41 @@ public class MpegCommonData {
         }
     }
 
+    public static int getPEStype(int streamID) {
 
-    public static int getPEStype(int streamID){
-
-        if ( streamID >= 0x0C0 && streamID <= 0x0DF ) {
+        if (streamID >= 0x0C0 && streamID <= 0x0DF) {
             return audioType;
         }
-        if ( streamID >= 0x0E0 && streamID <= 0x0EF ) {
+        if (streamID >= 0x0E0 && streamID <= 0x0EF) {
             return videoType;
         }
-        if ( streamID == 0x1F0 || streamID == 0x1F1 ){
+        if (streamID == 0x1F0 || streamID == 0x1F1) {
             return CAStype;
         }
-        if ( streamID == 0x17C || streamID == 0x1FF ){
+        if (streamID == 0x17C || streamID == 0x1FF) {
             return PSMtype;
         }
-        if ( streamID == 0x0F3 ){
+        if (streamID == 0x0F3) {
             return MHEGtype;
         }
-        if ( streamID == 0x0BD || streamID == 0x0BF){
+        if (streamID == 0x0BD || streamID == 0x0BF) {
             return privateType;
         }
-        if( streamID >= 0x0FD4 && streamID <= 0x0F8){
+        if (streamID >= 0x0FD4 && streamID <= 0x0F8) {
             return defaultType;
         }
         return defaultType;
     }
 
-
-    public static  String getStreamDescription(int streamID) {
+    public static String getStreamDescription(int streamID) {
 
         if (streamID >= 0x0C0 && streamID <= 0x0DF) {
-            return "ISO/IEC 13818-3 or ISO/IEC 11172-3 or \n" +
-                    "ISO/IEC 13818-7 or ISO/IEC 14496-3 audio stream number: " + (streamID << 4);
+            return "ISO/IEC 13818-3 or ISO/IEC 11172-3 or \n"
+                    + "ISO/IEC 13818-7 or ISO/IEC 14496-3 audio stream number: " + (streamID << 4);
         }
         if (streamID >= 0x0E0 && streamID <= 0x0FF) {
-            return "ITU-T Rec. H.262 | ISO/IEC 13818-2 or  \n" +
-                    "ISO/IEC 11172-2or ISO/IEC 14496-2 video stream number: " + (streamID << 4);
+            return "ITU-T Rec. H.262 | ISO/IEC 13818-2 or  \n"
+                    + "ISO/IEC 11172-2or ISO/IEC 14496-2 video stream number: " + (streamID << 4);
         }
         if (streamID >= 0x0FA && streamID <= 0x0FE) {
             return "Reserved data stream";
@@ -505,6 +493,93 @@ public class MpegCommonData {
                 return "reserved";
         }
         return "reserved";
+    }
+
+    public static String getServiceTypeString(final int serviceType) {
+
+        switch (serviceType) {
+            case 0x00:
+                return "reserved";
+            case 0x12:
+                return "reserved";
+            case 0x13:
+                return "reserved";
+            case 0x14:
+                return "reserved";
+            case 0x15:
+                return "reserved";
+            case 0x08:
+                return "reserved";
+            case 0x09:
+                return "reserved";    
+            case 0x01:
+                return "TV (SD)";
+            case 0x11:
+                return "TV (HD-MPEG2)";
+            case 0x16:
+                return "TV (SD-MPEG4)";
+            case 0x19:
+                return "TV (HD-MPEG4)";
+            case 0x02:
+                return "Radio";
+            case 0x0A:
+                return "Radio (advanced)";    
+            case 0x03:
+                return "Teletext";
+            case 0x04:
+                return "NVOD reference";
+            case 0x05:
+                return "NVOD time-shifted";
+            case 0x06:
+                return "mosaic";
+            case 0x07:
+                return "PAL coded signal";
+            case 0x0B:
+                return "mosaic advanced)";
+            case 0x0C:
+                return "data broadcast";
+            case 0x0D:
+                return "Common Interface Usage";
+            case 0x0E:
+                return "RCS Map";
+            case 0x0F:
+                return "RCS FLS";
+            case 0x10:
+                return "DVB MHP service";
+            case 0x17:
+                return "advanced codec SD NVOD time-shifted ";
+            case 0x18:
+                return "advanced codec SD NVOD reference";
+            case 0x1A:
+                return "advanced codec HD NVOD time-shifted";
+            case 0x1B:
+                return "advanced codec HD NVOD reference";
+            default:
+                if ((0x1C <= serviceType) && (serviceType <= 0x7F)) {
+                    return "reserved";
+                }
+
+                if ((0x80 <= serviceType) && (serviceType <= 0xFE)) {
+                    return "user defined";
+                }
+                return "Illegal value";
+        }
+    }
+    
+     public static String getServiceType(final int serviceType) {
+        switch (serviceType) {
+            case 0x01:
+            case 0x11:
+            case 0x16:
+            case 0x19:
+                return "TV";
+            case 0x02:
+            case 0x0A:
+                return "Radio"; 
+            default:
+                return "Unknown";
+        }
+
     }
 
 }

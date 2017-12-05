@@ -1,7 +1,7 @@
 package ru.ts_parser.parser.header;
 
 import static ru.ts_parser.tools.Tools.binToInt;
-import ru.ts_parser.entity.packet.AdaptationFieldHeader;
+import ru.ts_parser.entity.AdaptationFieldHeader;
 import ru.ts_parser.parser.Parser;
 
 /**
