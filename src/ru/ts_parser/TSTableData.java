@@ -1,8 +1,7 @@
 package ru.ts_parser;
 
 import java.util.*;
-import ru.ts_parser.MPEGConstant;
-import static ru.ts_parser.MPEGConstant.getElementaryStreamDescriptor;
+import ru.ts_parser.tools.DescriptionTools;
 
 public class TSTableData {
 
@@ -86,7 +85,7 @@ public class TSTableData {
                     .append("            ")
                     .append("Provider name: " + providerNameMap.get(programEntry.getKey()) + "\n")
                     .append("            ")
-                    .append("Program type name: " + MPEGConstant.getServiceType(programTypeMap.get(programEntry.getKey())) + "\n")
+                    .append("Program type name: " + DescriptionTools.getServiceType(programTypeMap.get(programEntry.getKey())) + "\n")
                     .append("            ")
                     .append("Free CA mode: " + getFreeCAModeName(programFreeCAModeMap.get(programEntry.getKey())) + "\n");
             int index = 0;
@@ -100,7 +99,7 @@ public class TSTableData {
                                     .append("                        ")
                                     .append("       PID: " + ESentry.getKey() + "\n")
                                     .append("                        ")
-                                    .append("       Stream type: " + getElementaryStreamDescriptor(ESentry.getValue()) + "\n");
+                                    .append("       Stream type: " + DescriptionTools.getElementaryStreamDescriptor(ESentry.getValue()) + "\n");
                         }
                     }
                 }

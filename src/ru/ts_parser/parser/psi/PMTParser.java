@@ -1,7 +1,5 @@
 package ru.ts_parser.parser.psi;
 
-import java.util.HashMap;
-import java.util.Map;
 import static ru.ts_parser.MPEGConstant.*;
 import static ru.ts_parser.tools.Tools.binToInt;
 import ru.ts_parser.TSTableData;
@@ -13,13 +11,11 @@ import ru.ts_parser.entity.Packet;
  */
 public class PMTParser extends PSIParserAbstract {
 
-    final int reserved = 2; //MPEG константа
-
     @Override
     protected void parseSection(Packet packet, byte[] sectionBinary, int sectionLength, int position, short tableID, TSTableData tables) {
-        int programNum = (int) binToInt(sectionBinary, position = 0, position += programNumberLength);
+        int programNum = (int) binToInt(sectionBinary, position = 0, position += BITS_LEN_16);
 
-//        byte versionNum = (byte) binToInt(sectionBinary, position += reserved, position += versionNumLength);        
+//        byte versionNum = (byte) binToInt(sectionBinary, position += BITS_LEN_2, position += versionNumLength);        
         position += 7;
 
         byte currentNextIndicator = sectionBinary[position++];
@@ -30,20 +26,20 @@ public class PMTParser extends PSIParserAbstract {
 
 //        byte sectionNum = (byte) binToInt(sectionBinary, position, position += sectionNumLength);
 //        byte lastSectionNum = (byte) binToInt(sectionBinary, position, position += sectionNumLength);
-//        short PCR_PID = (short) binToInt(sectionBinary, position += reserved + 1, position += PCR_PIDlength);
+//        short PCR_PID = (short) binToInt(sectionBinary, position += BITS_LEN_2 + 1, position += PCR_PIDlength);
         position += 32;
 
-        short programInfoLength = (short) binToInt(sectionBinary, position += (reserved * 2), position += twelveLengthLength);
+        short programInfoLength = (short) binToInt(sectionBinary, position += BITS_LEN_4, position += BITS_LEN_12);
 
-        int nLoopDescriptorsLength = programInfoLength * byteBinaryLength;
+        int nLoopDescriptorsLength = programInfoLength * BYTE_BITS_LEN;
         position += nLoopDescriptorsLength;
 
-        int N = (sectionLength * byteBinaryLength) - CRClength;
+        int N = (sectionLength * BYTE_BITS_LEN) - BITS_LEN_32;
         for (; position < N;) {
-            int streamType = (int) binToInt(sectionBinary, position, position += streamTypeLength);
-            int elementaryPID = (int) binToInt(sectionBinary, position += 3, position += elementaryPIDlength);
-            int ESinfoLength = (int) binToInt(sectionBinary, position += 4, position += twelveLengthLength);
-            position += ESinfoLength * byteBinaryLength;
+            int streamType = (int) binToInt(sectionBinary, position, position += BITS_LEN_8);
+            int elementaryPID = (int) binToInt(sectionBinary, position += 3, position += BITS_LEN_13);
+            int ESinfoLength = (int) binToInt(sectionBinary, position += 4, position += BITS_LEN_12);
+            position += ESinfoLength * BYTE_BITS_LEN;
             tables.updateESMap(elementaryPID, streamType);
             tables.updatePMTMap(elementaryPID, programNum);
         }

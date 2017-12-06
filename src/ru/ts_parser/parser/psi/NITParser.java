@@ -14,16 +14,14 @@ public class NITParser extends PSIParserAbstract {
 
     private final DescriptorParser descriptor;
 
-    final int reserved = 2; //MPEG константа
-
     public NITParser() {
         descriptor = new DescriptorParser();
     }
 
     @Override
     protected void parseSection(Packet packet, byte[] sectionBinary, int sectionLength, int position, short tableID, TSTableData tables) {
-        if (tableID == 0x40) { // actual network table_id = 0x40, other networks table_id = 0x41
-            int networkID = (int) binToInt(sectionBinary, position = 0, position += networkIDlength);
+        if (tableID == NIT_CURRENT_NETWORK_TABLE_ID) { // actual network table_id = 0x40, other networks table_id = 0x41
+            int networkID = (int) binToInt(sectionBinary, position = 0, position += BITS_LEN_16);
 //            byte versionNum = (byte) binToInt(sectionBinary, position += 2, position += versionNumLength);
             position += 7;
 
@@ -37,24 +35,24 @@ public class NITParser extends PSIParserAbstract {
 //            short lastSectionNum = (short) binToInt(sectionBinary, position, position += sectionNumLength);
             position += 16;
 
-            short networkDescriptorsLength = (short) binToInt(sectionBinary, position += (reserved * 2), position += twelveLengthLength);
+            short networkDescriptorsLength = (short) binToInt(sectionBinary, position += BITS_LEN_4, position += BITS_LEN_12);
 
             descriptor.parse(networkID, sectionBinary, networkDescriptorsLength, position, tables);
 
-            position += networkDescriptorsLength * byteBinaryLength;
+            position += networkDescriptorsLength * BYTE_BITS_LEN;
 
-            //short transportStreamLoopLength = (short) binToInt(sectionBinary, position += (reserved*2), position += twelveLengthLength);
+            //short transportStreamLoopLength = (short) binToInt(sectionBinary, position += BITS_LEN_4, position += twelveLengthLength);
             position += 16;
 
-            int N = sectionLength * byteBinaryLength - CRClength;
+            int N = sectionLength * BYTE_BITS_LEN - BITS_LEN_32;
 
             while (position < N) {
-                int transportStreamID = (int) binToInt(sectionBinary, position, position += sixteenIDlength);
+                int transportStreamID = (int) binToInt(sectionBinary, position, position += BITS_LEN_16);
                 tables.incrTransportStreamSet(transportStreamID);
 //                int originalNetworkID = (int) binToInt(sectionBinary, position, position += sixteenIDlength);
-                position += sixteenIDlength;
-                short transportDescriptiorsLoopLength = (short) binToInt(sectionBinary, position += (reserved * 2), position += descriptorsLengthLength);
-                if ((transportDescriptiorsLoopLength *= byteBinaryLength) + position > (sectionLength * byteBinaryLength)) {
+                position += BITS_LEN_16;
+                short transportDescriptiorsLoopLength = (short) binToInt(sectionBinary, position += BITS_LEN_4, position += BITS_LEN_12);
+                if ((transportDescriptiorsLoopLength *= BYTE_BITS_LEN) + position > (sectionLength * BYTE_BITS_LEN)) {
                     break;
                 }
                 descriptor.parse(transportStreamID, sectionBinary, transportDescriptiorsLoopLength, position, tables);

@@ -11,14 +11,12 @@ import ru.ts_parser.entity.Packet;
  */
 public class PATParser extends PSIParserAbstract {
 
-    final int reserved = 2; //MPEG константа
-
     @Override
     protected void parseSection(Packet packet, byte[] sectionBinary, int sectionLength, int position, short tableID, TSTableData tables) {
-        int transportStreamID = (int) binToInt(sectionBinary, position = 0, position += transportStreamIDlength);
+        int transportStreamID = (int) binToInt(sectionBinary, position = 0, position += BITS_LEN_16);
         tables.setCurrentTransportStreamID(transportStreamID);
 
-//        short versionNum = (short) binToInt(sectionBinary, position += reserved, position += versionNumLength);
+//        short versionNum = (short) binToInt(sectionBinary, position += BITS_LEN_2, position += versionNumLength);
         position += 7;
 
         byte currentNextIndicator = sectionBinary[position++];
@@ -31,20 +29,20 @@ public class PATParser extends PSIParserAbstract {
 //        int lastSectionNum = (int) binToInt(sectionBinary, position, position += sectionNumLength);
         position += 16;
 
-        int N = (sectionLength * byteBinaryLength) - CRClength; //mandatoryPATfields; //длина следующего поля с циклом программных ассоциаций
+        int N = (sectionLength * BYTE_BITS_LEN) - BITS_LEN_32; //длина следующего поля с циклом программных ассоциаций
 
-        for (int i = 0; i < N; i += PATloopLength) { //цикл приобретения программных ассоциаций таблицы PAT
-            if (N < position + PATloopLength) {
+        for (int i = 0; i < N; i += BITS_LEN_32) { //цикл приобретения программных ассоциаций таблицы PAT
+            if (N < position + BITS_LEN_32) {
                 break;
             }
-            int programNum = (int) binToInt(sectionBinary, position, position += programNumberLength); //получение номера программы
+            int programNum = (int) binToInt(sectionBinary, position, position += BITS_LEN_16); //получение номера программы
             if (programNum == 0) {
                 // It also gives the location of the Network Information Table (NIT) on program num = 0
                 position += 16;
                 continue;
             }
             //получение PID пакета, содержащего таблицу PMT программы
-            int programMapPID = (int) binToInt(sectionBinary, position += 3, position += PCR_PIDlength);
+            int programMapPID = (int) binToInt(sectionBinary, position += (1 + BITS_LEN_2), position += BITS_LEN_13);
             tables.updatePATMap(programNum, programMapPID);
             tables.incrPMTSet(programMapPID);
         }

@@ -12,15 +12,14 @@ public abstract class Parser {
 
         int commonFields = parseCommonFields(packet, startPosition);
 
-        byte[] binaryPacket = new byte[PSIcommonFieldsBinaryLength];
-        for (int index = 0; index < PSIcommonFieldsBinaryLength; index++) {
-            binaryPacket[PSIcommonFieldsBinaryLength - index - 1] = getBit(commonFields, index);
+        byte[] binaryPacket = new byte[PSI_COMMON_FIELDS_BITS_LEN];
+        for (int index = 0; index < PSI_COMMON_FIELDS_BITS_LEN; index++) {
+            binaryPacket[PSI_COMMON_FIELDS_BITS_LEN - index - 1] = getBit(commonFields, index);
         }
         int position = 0;
-        final int reserved = 2;
-        short tableID = (short) binToInt(binaryPacket, position, position += tableIDlength);
+        short tableID = (short) binToInt(binaryPacket, position, position += BITS_LEN_8);
         byte sectionSyntaxIndicator = (byte) binToInt(binaryPacket, position, position += 1);
-        int sectionLength = (int) binToInt(binaryPacket, position += 1 + reserved, position += sectionLengthLength);
+        int sectionLength = (int) binToInt(binaryPacket, position += 1 + BITS_LEN_2, position += BITS_LEN_12);
 
         return new PSI(tableID, sectionSyntaxIndicator, sectionLength, null);
     }
@@ -31,12 +30,8 @@ public abstract class Parser {
                 | (packet[++position]) & 0x000000ff);
     }
 
-    public boolean isPSI(Integer PID) {
-        return PID <= PSImaxPID;
-    }
-
     public int calculatePosition(Packet packet) {
-        int position = tsHeaderSize;
+        int position = HEADER_SIZE;
         if (hasAdaptationField(packet.getAdaptationFieldControl())) {
             position += packet.getAdaptationFieldHeader().getAdaptationFieldLength();
         }
@@ -44,11 +39,11 @@ public abstract class Parser {
     }
 
     public boolean hasAdaptationField(int adaptationFieldControl) {
-        return (adaptationFieldControl == adaptationFieldOnly || adaptationFieldControl == adaptationFieldAndPayload);
+        return (adaptationFieldControl == ADAPT_FIELD_ONLY || adaptationFieldControl == ADAPT_AND_PAYLOAD);
     }
 
     public boolean hasPayload(int adaptationFieldControl) {
-        return (adaptationFieldControl == payloadOnly || adaptationFieldControl == adaptationFieldAndPayload);
+        return (adaptationFieldControl == PAYLOAD_ONLY || adaptationFieldControl == ADAPT_AND_PAYLOAD);
     }
 
     public int[] parseNfields(byte[] packet, int pos, int length) {
@@ -67,8 +62,8 @@ public abstract class Parser {
 
     public byte[] parseNchars(byte[] binaryHeader, int position, int length) {
         int end = position + length;
-        byte[] byteStringArray = new byte[length / charSize];
-        for (int i = 0; position < end; position += charSize, i++) {
+        byte[] byteStringArray = new byte[length / CHAR_SIZE];
+        for (int i = 0; position < end; position += CHAR_SIZE, i++) {
             byteStringArray[i] = binToByte(binaryHeader, position);
         }
         return byteStringArray;
@@ -76,7 +71,7 @@ public abstract class Parser {
 
     private char binToChar(byte[] binaryHeader, int start) {
         char result = 0;
-        for (int i = start; i < start + charSize; i++) {
+        for (int i = start; i < start + CHAR_SIZE; i++) {
             result = (char) ((result << 1) | (binaryHeader[i] == 1 ? 1 : 0));
         }
         return result;
@@ -84,25 +79,10 @@ public abstract class Parser {
 
     private byte binToByte(byte[] binaryHeader, int start) {
         byte result = (byte) 0;
-        for (int i = start; i < start + charSize; i++) {
+        for (int i = start; i < start + CHAR_SIZE; i++) {
             result = (byte) ((result << 1) | (binaryHeader[i] == 1 ? 1 : 0));
         }
         return result;
-    }
-
-    protected boolean isSDT(short tableID) {
-        return tableID == SDSactualTableID || tableID == SDSotherTableID;
-    }
-
-    protected boolean isEIT(short tableID) {
-        if (tableID == EISactualPresentTableID || tableID == EISotherPresentTableID) {
-            return true;
-        } else if (tableID >= 0x50 || tableID <= 0x5F) { //EISactualPresentTableIDschedule
-            return true;
-        } else if (tableID >= 0x60 || tableID <= 0x6F) { //EISotherPresentTableIDschedule
-            return true;
-        }
-        return false;
     }
 
     public byte[] merge(byte[] array1, byte[] array2) {

@@ -1,13 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.ts_parser.tools;
 
-import java.util.Arrays;
 import static ru.ts_parser.MPEGConstant.*;
-import java.util.Map;
 
 /**
  *
@@ -43,38 +36,16 @@ public class Tools {
         if (length < 0) {
             return new byte[0];
         }
-        int size = length * byteBinaryLength;
+        int size = length * BYTE_BITS_LEN;
         byte[] binaryFields = new byte[size];
         int offset = 0;
 
         for (int index = length - 1; index >= 0; index--) {
-            for (int i = 0; i < byteBinaryLength; i++, offset++) {
+            for (int i = 0; i < BYTE_BITS_LEN; i++, offset++) {
                 binaryFields[size - offset - 1] = getBit(intFields[index], i);
             }
         }
         return binaryFields;
-    }
-
-    public static <K, V> void ifAbsentPut(Map map, K key, V value) {
-        V v = (V) map.get(key);
-        if (v == null) {
-            map.put(key, value);
-        }
-    }
-
-    public static String byteArrayToHex(byte[] a) {
-        StringBuilder sb = new StringBuilder(a.length * 2);
-        for (byte b : a) {
-            sb.append(" " + String.format("%02x", b));
-        }
-        return sb.toString();
-    }
-
-    public static <T> T[] append(T[] arr, T element) {
-        final int N = arr.length;
-        arr = Arrays.copyOf(arr, N + 1);
-        arr[N] = element;
-        return arr;
     }
 
 }

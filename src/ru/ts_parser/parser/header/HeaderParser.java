@@ -12,14 +12,14 @@ import ru.ts_parser.parser.Parser;
 public class HeaderParser extends Parser {
 
     public Packet analyzeHeader(byte[] header, byte[] packet, long index) {
-        int position = syncByteBinarySize; 
+        int position = SYNC_BYTE_BITS_LEN; 
         byte transportErrorIndicator = header[position++]; 
         byte payloadStartIndicator = header[position++];
         byte transportPriority = header[position++];
-        short PID = (short) binToInt(header, position, position += PIDfieldLength); 
-        byte tranportScramblingControl = (byte) binToInt(header, position, position += TSCfieldLength); //2
-        byte adaptationFieldControl = (byte) binToInt(header, position, position += adaptationFieldControlLength); //4
-        byte continuityCounter = (byte) binToInt(header, position, continuityCounterLength); //4
+        short PID = (short) binToInt(header, position, position += BITS_LEN_13); 
+        byte tranportScramblingControl = (byte) binToInt(header, position, position += BITS_LEN_2); //2
+        byte adaptationFieldControl = (byte) binToInt(header, position, position += BITS_LEN_2); //4
+        byte continuityCounter = (byte) binToInt(header, position, BITS_LEN_4); //4
 
         return new Packet(
                 index,

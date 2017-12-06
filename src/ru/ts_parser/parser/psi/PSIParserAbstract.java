@@ -28,7 +28,7 @@ public abstract class PSIParserAbstract extends Parser {
 
     public void parse(Packet packet, TSTableData tables) {
         if (previousPacketBuffer != null && packet.getPayloadStartIndicator() == 0) {
-            previousPacketBuffer = merge(previousPacketBuffer, Arrays.copyOfRange(packet.getData(), tsHeaderSize, tsPacketSize));
+            previousPacketBuffer = merge(previousPacketBuffer, Arrays.copyOfRange(packet.getData(), HEADER_SIZE, PACKET_SIZE));
             packet.updateData(previousPacketBuffer);
         } else {
             previousPacketBuffer = null;
@@ -39,19 +39,19 @@ public abstract class PSIParserAbstract extends Parser {
         int sectionLength = psiCommonFields.getSectionLength();
         
         int sectionStart = position;
-        int sectionEnd = position + PSIcommonFieldsLength + sectionLength;
+        int sectionEnd = position + PSI_COMMON_FIELDS_SIZE + sectionLength;
          
         if (sectionEnd > packet.getData().length) {
             previousPacketBuffer = packet.getData();
             return;
         }
         
-        if (sectionLength > 1021 || !CRC32.validate(Arrays.copyOfRange(packet.getData(), sectionStart, sectionEnd))) {
+        if (sectionLength > MAX_SECTION_LENGTH || !CRC32.validate(Arrays.copyOfRange(packet.getData(), sectionStart, sectionEnd))) {
             previousPacketBuffer = null;
             return;
         }
 
-        position += PSIcommonFieldsLength; //обновление позиции после получения общих полей
+        position += PSI_COMMON_FIELDS_SIZE; //обновление позиции после получения общих полей
 
         int[] intSectionsFields = parseNfields(packet.getData(), position, sectionLength);
         byte[] sectionBinary = Tools.intToBinary(intSectionsFields, sectionLength);

@@ -90,14 +90,14 @@ public class StreamParser extends Parser {
         parseExecutorService.submit(new Runnable() {
             @Override
             public void run() {
-                if (buffer.length >= tsPacketSize) {
-                    for (int i = 0; i < buffer.length; i += tsPacketSize) {
+                if (buffer.length >= PACKET_SIZE) {
+                    for (int i = 0; i < buffer.length; i += PACKET_SIZE) {
                         i = seek(buffer, i);
-                        if ((i == nil) || ((i + tsPacketSize) > buffer.length)) {
+                        if ((i == NIL) || ((i + PACKET_SIZE) > buffer.length)) {
                             stop();
                             break;
                         }
-                        parsePacket(Arrays.copyOfRange(buffer, i, i + tsPacketSize));
+                        parsePacket(Arrays.copyOfRange(buffer, i, i + PACKET_SIZE));
                         if (isParsed()) {
                             System.out.println("Analized packets for full parse: " + packetIndex);
                             System.out.println(parserTables.toString());
@@ -139,49 +139,49 @@ public class StreamParser extends Parser {
     }
 
     private int seek(byte[] buffer, int i) {
-        for (; i < buffer.length - tsPacketSize; i++) {
-            if (buffer[i] == syncByte && buffer[i + tsPacketSize] == syncByte) {
+        for (; i < buffer.length - PACKET_SIZE; i++) {
+            if (buffer[i] == SYNC_BYTE && buffer[i + PACKET_SIZE] == SYNC_BYTE) {
                 return i;
             }
         }
-        return nil;
+        return NIL;
     }
 
     private boolean parsePacket(byte[] packetBufferMain) {
         // пакет должен начинаться с байта синхронизации
-        if (packetBufferMain[0] == syncByte) {
+        if (packetBufferMain[0] == SYNC_BYTE) {
             //получение 4 байтов заголовка
             int header = headerParser.parseHeader(packetBufferMain);
-            Packet packet = headerParser.analyzeHeader(Tools.toBinary(header, tsHeaderBinaryLength), packetBufferMain, packetIndex++);
+            Packet packet = headerParser.analyzeHeader(Tools.toBinary(header, HEADER_BITS_LEN), packetBufferMain, packetIndex++);
             if (packet.getTransportErrorIndicator() == 1) {
                 return true;
             }
-            if (packet.getPID() <= tsMaxPidValue) {
+            if (packet.getPID() <= MAX_PID_VALUE) {
                 // анализ пакета
                 if (!hasPAT) {
-                    if (packet.getPID() == PATpid) {
+                    if (packet.getPID() == PID_PAT_VALUE) {
                         patParser.parse(packet, parserTables);
                         hasPAT = patParser.getParserResult();
                     }
                 } else {
                     if (hasAdaptationField(packet.getAdaptationFieldControl())) {
                         short adaptationFieldHeader = adaptationFieldParser.parseAdaptationFieldHeader(packet.getData());
-                        byte[] binaryAdaptationFieldHeader = Tools.toBinary(adaptationFieldHeader, tsAdaptationFieldHeaderBinaryLength);
+                        byte[] binaryAdaptationFieldHeader = Tools.toBinary(adaptationFieldHeader, ADAPT_FIELD_HEADER_BITS_LEN);
                         packet.setAdaptationFieldHeader(adaptationFieldParser.analyzeAdaptationFieldHeader(binaryAdaptationFieldHeader));
                     }
                     if (hasPayload(packet.getAdaptationFieldControl())) {
                         if (!hasPMT && parserTables.getPMTSet().contains(packet.getPID())) {
                             pmtParser.parse(packet, parserTables);
                             hasPMT = parserTables.getPMTSet().isEmpty();
-                        } else if (isPSI(packet.getPID())) {
+                        } else if (packet.getPID() <= PSI_MAX_PID_VALUE) {
                             switch (packet.getPID()) {
-                                case NITpid:
+                                case PID_NIT_VALUE:
                                     if (!hasNIT) {
                                         nitParser.parse(packet, parserTables);
                                         hasNIT = nitParser.getParserResult();
                                     }
                                     break;
-                                case SDTpid:
+                                case PID_SDT_VALUE:
                                     if (!hasSDT && nitParser.hasParsedFlag()) {
                                         sdtParser.parse(packet, parserTables);
                                         hasSDT = parserTables.getTransportStreamSet().isEmpty();
