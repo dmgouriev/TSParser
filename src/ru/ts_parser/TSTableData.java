@@ -59,12 +59,11 @@ public class TSTableData {
         StringBuilder builder = new StringBuilder();
         builder.append("Current transport stream ID: " + currentTransportStreamID + "\n");
         builder.append("Network name: " + networkName + "\n");
-        builder.append("PLP count: " + transportStreamMap.keySet().size() + "\n");
         builder.append("Network transport stream info:\n");
         for (Map.Entry<Integer, Integer> tsEntry : transportStreamMap.entrySet()) {
             builder
                     .append("            ")
-                    .append("PLP: " + tsEntry.getValue() + ", transport stream ID: " + tsEntry.getKey() + "\n");
+                    .append("transport stream ID: " + tsEntry.getKey() + ", PLP: " + tsEntry.getValue() + "\n");
         }
         builder.append("Program Map Simple Table (total: " + programNameMap.keySet().size() + ")");
         builder.append("\n");
@@ -123,7 +122,7 @@ public class TSTableData {
     }
 
     public String getFreeCAModeName(boolean value) {
-        return (!value ? "FREE" : "ENCODED");
+        return (!value ? "clear" : "encoded");
     }
 
     public String getSimpleInfoString(int serviceID, String programName) {
@@ -132,7 +131,7 @@ public class TSTableData {
         if (obj != null) {
             streamId = (int) obj;
         }
-        String text = "     PLP: " + transportStreamMap.get(streamId) + "       " + programName + "     ";
+        String text = (transportStreamMap.get(streamId)!=null?("     PLP: " + transportStreamMap.get(streamId)):"") + "       " + programName + "     ";
         text += ((streamId != currentTransportStreamID)?"NOT IN CURRENT STREAM" : "");
         return text;
     }
@@ -190,7 +189,7 @@ public class TSTableData {
 
     /*      NIT     */
     public void updateTransportStreamMap(int transportStreamID, int plpNum) {
-        transportStreamMap.put(transportStreamID, plpNum);
+        transportStreamMap.put(transportStreamID, plpNum>=0 ? plpNum : null);
     }
 
     public void updateNetworkName(String newNetworkName) {

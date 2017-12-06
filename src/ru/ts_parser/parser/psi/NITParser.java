@@ -49,6 +49,7 @@ public class NITParser extends PSIParserAbstract {
             while (position < N) {
                 int transportStreamID = (int) binToInt(sectionBinary, position, position += BITS_LEN_16);
                 tables.incrTransportStreamSet(transportStreamID);
+                tables.updateTransportStreamMap(transportStreamID, NIL);
 //                int originalNetworkID = (int) binToInt(sectionBinary, position, position += sixteenIDlength);
                 position += BITS_LEN_16;
                 short transportDescriptiorsLoopLength = (short) binToInt(sectionBinary, position += BITS_LEN_4, position += BITS_LEN_12);

@@ -12,7 +12,7 @@ public class TSParser {
 
     public static void main(String[] args) throws Exception {
 //        new TSParser().parse(new File("C:\\\\data\\mux_MYGICA_546000000_8000000_20171121083157.ts"));
-        parse(new File("/home/dmgouriev/tuner/mux_MYGICA_546000000_8000000_20171127172515.ts")); //mux_MYGICA_546000000_8000000_20171121083157.ts"));
+        parse(new File("/home/dmgouriev/tuner/mux_MYGICA_498000000_8000000_20171206143943.ts")); //mux_MYGICA_546000000_8000000_20171121083157.ts"));
     }
 
     public static void parse(File file) {
@@ -33,10 +33,8 @@ public class TSParser {
                         break;
                     }
                 }
-                if (parser.isParsed()) {
-                    TSTableData result = parser.getResult();
-                    System.out.println(result.toString());
-                }
+                TSTableData result = parser.getResult();
+                System.out.println(result.toString());
                 System.exit(0);
             }
         }).start();
