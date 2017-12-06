@@ -1,7 +1,7 @@
 package ru.ts_parser.parser.header;
 
 import static ru.ts_parser.tools.Tools.binToInt;
-import static ru.ts_parser.MPEGConstant.*;
+import static ru.ts_parser.Constant.*;
 import ru.ts_parser.entity.Packet;
 import ru.ts_parser.parser.Parser;
 

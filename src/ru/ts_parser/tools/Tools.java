@@ -1,6 +1,6 @@
 package ru.ts_parser.tools;
 
-import static ru.ts_parser.MPEGConstant.*;
+import static ru.ts_parser.Constant.*;
 
 /**
  *

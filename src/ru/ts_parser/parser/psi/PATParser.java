@@ -1,6 +1,6 @@
 package ru.ts_parser.parser.psi;
 
-import static ru.ts_parser.MPEGConstant.*;
+import static ru.ts_parser.Constant.*;
 import static ru.ts_parser.tools.Tools.binToInt;
 import ru.ts_parser.TSTableData;
 import ru.ts_parser.entity.Packet;

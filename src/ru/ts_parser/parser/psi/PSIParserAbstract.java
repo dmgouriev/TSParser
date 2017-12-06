@@ -6,7 +6,7 @@
 package ru.ts_parser.parser.psi;
 
 import java.util.Arrays;
-import static ru.ts_parser.MPEGConstant.*;
+import static ru.ts_parser.Constant.*;
 import ru.ts_parser.tools.Tools;
 import ru.ts_parser.TSTableData;
 import ru.ts_parser.entity.Packet;

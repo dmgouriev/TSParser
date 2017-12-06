@@ -2,9 +2,11 @@ package ru.ts_parser;
 
 import ru.ts_parser.tools.Tools;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import static ru.ts_parser.MPEGConstant.*;
+import static ru.ts_parser.Constant.*;
 import ru.ts_parser.entity.Packet;
 import ru.ts_parser.parser.header.AdaptationFieldParser;
 import ru.ts_parser.parser.header.HeaderParser;
@@ -19,16 +21,16 @@ import ru.ts_parser.parser.psi.SDTParser;
  * @author dmgouriev
  */
 public class StreamParser extends Parser {
-    
+
     public static StreamParser getInstance() {
         return StreamParserHolder.INSTANCE;
     }
-    
+
     private static class StreamParserHolder {
 
         private static final StreamParser INSTANCE = new StreamParser();
     }
-    
+
     public static enum State {
         SUSPENDED,
         RUNNING,
@@ -52,12 +54,14 @@ public class StreamParser extends Parser {
     private State state;
 
     private long packetIndex = 0;
-    private TSTableData parserTables;
+    private TSTableData tsTableData;
+
+    private Timer parserTimer;
 
     private StreamParser() {
         reInitThis();
     }
-    
+
     private void reInitThis() {
         headerParser = new HeaderParser();
         adaptationFieldParser = new AdaptationFieldParser();
@@ -73,12 +77,11 @@ public class StreamParser extends Parser {
         hasNIT = false;
 
         packetIndex = 0;
-        parserTables = new TSTableData();
+        tsTableData = new TSTableData();
 
         this.parseExecutorService = Executors.newFixedThreadPool(1);
         this.state = State.SUSPENDED;
     }
-    
 
     public void parse(final byte[] buffer) {
         if (state == State.STOPPED) {
@@ -86,6 +89,13 @@ public class StreamParser extends Parser {
         }
         if (state == State.SUSPENDED) {
             state = State.RUNNING;
+            parserTimer = new Timer();
+            parserTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                   stop();
+                }
+            }, Constant.MAX_PARSE_TIME_SECS * 1000);
         }
         parseExecutorService.submit(new Runnable() {
             @Override
@@ -99,8 +109,6 @@ public class StreamParser extends Parser {
                         }
                         parsePacket(Arrays.copyOfRange(buffer, i, i + PACKET_SIZE));
                         if (isParsed()) {
-                            System.out.println("Analized packets for full parse: " + packetIndex);
-                            System.out.println(parserTables.toString());
                             stop();
                             break;
                         }
@@ -108,15 +116,17 @@ public class StreamParser extends Parser {
                 } else {
                     parsePacket(buffer);
                     if (isParsed()) {
-                            System.out.println("Analized packets for full parse: " + packetIndex);
-                            System.out.println(parserTables.toString());
-                            stop();
-                        }
+                        stop();
+                    }
                 }
             }
         });
     }
 
+    public TSTableData getResult() {
+        return tsTableData;
+    }
+    
     public boolean isParsed() {
         return (hasPAT && hasPMT && hasSDT && hasNIT
                 && patParser.hasParsedFlag() && pmtParser.hasParsedFlag() && sdtParser.hasParsedFlag() && nitParser.hasParsedFlag());
@@ -160,7 +170,7 @@ public class StreamParser extends Parser {
                 // анализ пакета
                 if (!hasPAT) {
                     if (packet.getPID() == PID_PAT_VALUE) {
-                        patParser.parse(packet, parserTables);
+                        patParser.parse(packet, tsTableData);
                         hasPAT = patParser.getParserResult();
                     }
                 } else {
@@ -170,21 +180,21 @@ public class StreamParser extends Parser {
                         packet.setAdaptationFieldHeader(adaptationFieldParser.analyzeAdaptationFieldHeader(binaryAdaptationFieldHeader));
                     }
                     if (hasPayload(packet.getAdaptationFieldControl())) {
-                        if (!hasPMT && parserTables.getPMTSet().contains(packet.getPID())) {
-                            pmtParser.parse(packet, parserTables);
-                            hasPMT = parserTables.getPMTSet().isEmpty();
+                        if (!hasPMT && tsTableData.getPMTSet().contains(packet.getPID())) {
+                            pmtParser.parse(packet, tsTableData);
+                            hasPMT = tsTableData.getPMTSet().isEmpty();
                         } else if (packet.getPID() <= PSI_MAX_PID_VALUE) {
                             switch (packet.getPID()) {
                                 case PID_NIT_VALUE:
                                     if (!hasNIT) {
-                                        nitParser.parse(packet, parserTables);
+                                        nitParser.parse(packet, tsTableData);
                                         hasNIT = nitParser.getParserResult();
                                     }
                                     break;
                                 case PID_SDT_VALUE:
                                     if (!hasSDT && nitParser.hasParsedFlag()) {
-                                        sdtParser.parse(packet, parserTables);
-                                        hasSDT = parserTables.getTransportStreamSet().isEmpty();
+                                        sdtParser.parse(packet, tsTableData);
+                                        hasSDT = tsTableData.getTransportStreamSet().isEmpty();
                                     }
                                     break;
                                 default:
@@ -200,7 +210,7 @@ public class StreamParser extends Parser {
     }
 
     public TSTableData getTables() {
-        return this.parserTables;
+        return this.tsTableData;
     }
 
     public long getPacketIndex() {
